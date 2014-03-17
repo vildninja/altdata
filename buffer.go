@@ -1,4 +1,4 @@
-package godata
+package altdata
 
 import "encoding/binary"
 import "io"
@@ -84,7 +84,7 @@ func (b *Buffer) WriteByte(in byte) error {
 
 // Write as many bytes as possible to writer.
 // Returns bytes written, error.
-func (b *Buffer) WriteTO(writer io.Writer) (n int, err error) {
+func (b *Buffer) WriteTo(writer io.Writer) (n int, err error) {
 	n, err = writer.Write(b.Bytes())
 	b.position += n
 	return
