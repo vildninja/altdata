@@ -29,6 +29,18 @@ func (b *Buffer) Length() int {
 	return b.limit - b.position
 }
 
+func (b *Buffer) Resize(newSize int) {
+	newSlice := make([]byte, newSize)
+	copy(newSlice, b.data)
+	b.data = newSlice
+	if b.limit > newSize {
+		b.limit = newSize
+	}
+	if b.position > newSize {
+		b.position = newSize
+	}
+}
+
 // Implementing io.Reader.
 func (b *Buffer) Read(p []byte) (n int, err error) {
 	n = copy(p, b.data[b.position:b.limit])
@@ -103,7 +115,7 @@ func (b *Buffer) Bytes() []byte {
 }
 
 // Change the position relatively from its current value.
-// Will panic if the changes position is < 0 or > limit!
+// Will panic if the changed position is < 0 or > limit!
 func (b *Buffer) ChangePosition(n int) {
 	if b.position+n < 0 || b.position+n > b.limit {
 		panic("Buffer position out of range!")
@@ -142,6 +154,7 @@ func (b *Buffer) ReadString(n int) string {
 	return string(b.ReadBytes(n))
 }
 
+// Writes a string to the buffer. Returns n bytes copied.
 func (b *Buffer) WriteString(str string) (n int, err error) {
 	return b.Write([]byte(str))
 }
