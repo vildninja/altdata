@@ -58,10 +58,11 @@ func (b *Buffer) ReadByte() (byte, error) {
 }
 
 // Read as many bytes as possible from reader.
-// Returns bytes read, error.
-func (b *Buffer) ReadFrom(reader io.Reader) (n int, err error) {
-	n, err = reader.Read(b.Bytes())
-	b.position += n
+// Returns bytes read as int64 but is int32, error.
+func (b *Buffer) ReadFrom(reader io.Reader) (n int64, err error) {
+	r, err := reader.Read(b.Bytes())
+	b.position += r
+	n = int64(r)
 	return
 }
 
@@ -83,10 +84,11 @@ func (b *Buffer) WriteByte(in byte) error {
 }
 
 // Write as many bytes as possible to writer.
-// Returns bytes written, error.
-func (b *Buffer) WriteTo(writer io.Writer) (n int, err error) {
-	n, err = writer.Write(b.Bytes())
-	b.position += n
+// Returns bytes written as int64 but is int32, error.
+func (b *Buffer) WriteTo(writer io.Writer) (n int64, err error) {
+	r, err := writer.Write(b.Bytes())
+	b.position += r
+	n = int64(r)
 	return
 }
 
@@ -134,7 +136,7 @@ func (b *Buffer) SetManual(position, limit int) {
 }
 
 // Returns up to n bytes. Panic if n is negative!
-func (b *Buffer) ReadBytes(n int) []byte {
+func (b *Buffer) Next(n int) []byte {
 	if n < 0 {
 		panic("Tryed to read negative number of bytes from Buffer")
 	}
@@ -150,8 +152,8 @@ func (b *Buffer) ReadBytes(n int) []byte {
 }
 
 // Returns a string of length up to n bytes. Panic if n is negative!
-func (b *Buffer) ReadString(n int) string {
-	return string(b.ReadBytes(n))
+func (b *Buffer) NextString(n int) string {
+	return string(b.Next(n))
 }
 
 // Writes a string to the buffer. Returns n bytes copied.
